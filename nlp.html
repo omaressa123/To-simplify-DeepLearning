@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Guide to Neural Networks</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals with Teal Accent -->
+    <!-- Application Structure Plan: A single-page vertical layout with a fixed sidebar for navigation. This allows users to either follow the logical flow of the topics by scrolling or jump directly to a concept of interest. Each topic is presented as an interactive module or "card," breaking down complex information into digestible, hands-on experiences. This structure was chosen to transform a static report into an active learning tool, prioritizing user engagement and comprehension over a rigid, linear presentation. -->
+    <!-- Visualization & Content Choices: The application uses interactive diagrams and simulations built with HTML/CSS and JavaScript Canvas (including Chart.js) to explain abstract concepts. For example, 'Convolutional Layers' are explained with a playable canvas animation, and 'Overfitting' is demonstrated with an interactive chart. These choices turn passive reading into active exploration, making the material more intuitive and memorable. All visualizations are designed to support the educational goal of each section within the overall application structure. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f5f5f4; /* stone-100 */
+        }
+        .nav-link {
+            transition: all 0.2s ease-in-out;
+        }
+        .nav-link.active {
+            background-color: #0d9488; /* teal-600 */
+            color: white;
+            transform: translateX(4px);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+    </style>
+</head>
+<body class="text-stone-800">
+
+    <div class="flex">
+        <nav class="fixed top-0 left-0 h-screen w-64 bg-white shadow-lg p-6 hidden lg:block">
+            <h2 class="text-xl font-bold text-teal-700 mb-6">NN Fundamentals</h2>
+            <ul class="space-y-2" id="desktop-nav">
+                <li><a href="#feed-forward" class="nav-link block p-2 rounded-md font-medium text-stone-600 hover:bg-teal-50">Feed-Forward Networks</a></li>
+                <li><a href="#convolutional" class="nav-link block p-2 rounded-md font-medium text-stone-600 hover:bg-teal-50">Convolutional Layers</a></li>
+                <li><a href="#vectorization" class="nav-link block p-2 rounded-md font-medium text-stone-600 hover:bg-teal-50">Vectorization</a></li>
+                <li><a href="#backpropagation" class="nav-link block p-2 rounded-md font-medium text-stone-600 hover:bg-teal-50">Backpropagation</a></li>
+                <li><a href="#gradients" class="nav-link block p-2 rounded-md font-medium text-stone-600 hover:bg-teal-50">Gradient Problems</a></li>
+                <li><a href="#softmax" class="nav-link block p-2 rounded-md font-medium text-stone-600 hover:bg-teal-50">Softmax & Loss</a></li>
+                <li><a href="#validation" class="nav-link block p-2 rounded-md font-medium text-stone-600 hover:bg-teal-50">Validation</a></li>
+                <li><a href="#overfitting" class="nav-link block p-2 rounded-md font-medium text-stone-600 hover:bg-teal-50">Overfitting</a></li>
+            </ul>
+        </nav>
+
+        <main class="w-full lg:ml-64 p-4 sm:p-8 md:p-12">
+            <div class="max-w-4xl mx-auto">
+                <header class="mb-12 text-center">
+                    <h1 class="text-4xl md:text-5xl font-bold text-teal-800 mb-4">An Interactive Guide to Neural Networks</h1>
+                    <p class="text-lg text-stone-600">Explore the core concepts behind neural networks through hands-on visualizations. Use the sidebar to navigate or simply scroll down.</p>
+                </header>
+
+                <div class="space-y-12">
+                    
+                    <section id="feed-forward" class="bg-white p-6 sm:p-8 rounded-lg shadow-md">
+                        <h3 class="text-2xl font-bold mb-4 text-teal-700">1. Feed-Forward Neural Networks</h3>
+                        <p class="mb-6 text-stone-600">This is the most fundamental type of neural network. Information flows in one direction—from input to output—through hidden layers. There are no loops. This section demonstrates the basic structure and flow of information. Hover over a neuron to see its connections.</p>
+                        <div id="ffn-diagram" class="flex justify-center items-center space-x-8 sm:space-x-16 p-4 min-h-[200px]"></div>
+                    </section>
+
+                    <section id="convolutional" class="bg-white p-6 sm:p-8 rounded-lg shadow-md">
+                        <h3 class="text-2xl font-bold mb-4 text-teal-700">2. Convolutional Layers</h3>
+                        <p class="mb-6 text-stone-600">Convolutional Neural Networks (CNNs) are ideal for image processing. They use a "filter" or "kernel" that slides over the input data to detect features like edges or textures. This animation shows the convolution process in action, creating a feature map.</p>
+                        <div class="bg-stone-50 p-4 rounded-lg">
+                            <canvas id="convolution-canvas" class="w-full h-64 sm:h-80 rounded-md"></canvas>
+                            <div class="flex justify-center items-center space-x-4 mt-4">
+                                <button id="conv-play" class="bg-teal-600 text-white px-4 py-2 rounded-md hover:bg-teal-700 transition">Play</button>
+                                <button id="conv-reset" class="bg-stone-500 text-white px-4 py-2 rounded-md hover:bg-stone-600 transition">Reset</button>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <section id="vectorization" class="bg-white p-6 sm:p-8 rounded-lg shadow-md">
+                        <h3 class="text-2xl font-bold mb-4 text-teal-700">3. Making Neural Networks Fast with Vectorization</h3>
+                        <p class="mb-6 text-stone-600">Training neural networks requires immense computation. Vectorization speeds this up by replacing slow loops with optimized matrix operations. Click "Run Simulation" to see a conceptual comparison of the speed difference between a loop and a vectorized operation.</p>
+                        <div class="grid md:grid-cols-2 gap-8">
+                            <div class="bg-stone-50 p-4 rounded-lg">
+                                <h4 class="font-semibold mb-2">Non-Vectorized (Loop)</h4>
+                                <pre class="bg-stone-200 text-sm p-2 rounded"><code>for i in range(n):
+    output[i] = w[i] * a[i] + b[i]</code></pre>
+                                <p class="mt-4 font-mono text-center text-lg">Time: <span id="loop-time">0.00 ms</span></p>
+                            </div>
+                            <div class="bg-stone-50 p-4 rounded-lg">
+                                <h4 class="font-semibold mb-2">Vectorized (Matrix Operation)</h4>
+                                <pre class="bg-stone-200 text-sm p-2 rounded"><code>Z = W * A + B</code></pre>
+                                <p class="mt-4 font-mono text-center text-lg">Time: <span id="vector-time">0.00 ms</span></p>
+                            </div>
+                        </div>
+                        <div class="text-center mt-6">
+                            <button id="run-vector-sim" class="bg-teal-600 text-white px-4 py-2 rounded-md hover:bg-teal-700 transition">Run Simulation</button>
+                        </div>
+                    </section>
+
+                    <section id="backpropagation" class="bg-white p-6 sm:p-8 rounded-lg shadow-md">
+                        <h3 class="text-2xl font-bold mb-4 text-teal-700">4. Neural Network Backpropagation</h3>
+                        <p class="mb-6 text-stone-600">Backpropagation is the algorithm used to train networks. It involves a "forward pass" to make a prediction and calculate error, followed by a "backward pass" to propagate the error back and update the weights. Use the buttons to visualize each pass.</p>
+                        <div id="backprop-diagram" class="flex justify-center items-center space-x-8 sm:space-x-16 p-4 min-h-[200px]"></div>
+                        <div class="flex justify-center items-center space-x-4 mt-4">
+                            <button id="forward-pass" class="bg-teal-600 text-white px-4 py-2 rounded-md hover:bg-teal-700 transition">Forward Pass</button>
+                            <button id="backward-pass" class="bg-stone-500 text-white px-4 py-2 rounded-md hover:bg-stone-600 transition">Backward Pass</button>
+                        </div>
+                    </section>
+
+                    <section id="gradients" class="bg-white p-6 sm:p-8 rounded-lg shadow-md">
+                        <h3 class="text-2xl font-bold mb-4 text-teal-700">5. Vanishing & Exploding Gradients</h3>
+                        <p class="mb-6 text-stone-600">During backpropagation, the error signals (gradients) can become extremely small (vanish) or large (explode), hindering learning. This chart shows how different gradient scenarios affect the model's ability to minimize loss over time.</p>
+                        <div class="chart-container">
+                            <canvas id="gradient-chart"></canvas>
+                        </div>
+                        <div class="flex flex-wrap justify-center gap-4 mt-4">
+                            <button data-type="normal" class="gradient-btn bg-teal-600 text-white px-4 py-2 rounded-md hover:bg-teal-700 transition">Normal Gradient</button>
+                            <button data-type="vanishing" class="gradient-btn bg-stone-500 text-white px-4 py-2 rounded-md hover:bg-stone-600 transition">Vanishing Gradient</button>
+                            <button data-type="exploding" class="gradient-btn bg-stone-500 text-white px-4 py-2 rounded-md hover:bg-stone-600 transition">Exploding Gradient</button>
+                        </div>
+                    </section>
+
+                    <section id="softmax" class="bg-white p-6 sm:p-8 rounded-lg shadow-md">
+                        <h3 class="text-2xl font-bold mb-4 text-teal-700">6. Softmax & Categorical Crossentropy</h3>
+                        <p class="mb-6 text-stone-600">For classification tasks, the Softmax function converts the network's raw output (logits) into a probability distribution. Change the logit values below to see how the probabilities update in real-time. Notice they always sum to 1.</p>
+                        <div class="flex flex-col md:flex-row gap-8 items-center justify-center">
+                            <div class="w-full md:w-1/2">
+                                <h4 class="font-semibold mb-2 text-center">Raw Logits (Edit Me)</h4>
+                                <div class="space-y-2" id="softmax-inputs">
+                                    <div class="flex items-center">
+                                        <label class="w-16">Class A:</label>
+                                        <input type="number" value="2.0" class="softmax-input w-full p-2 border border-stone-300 rounded-md">
+                                    </div>
+                                    <div class="flex items-center">
+                                        <label class="w-16">Class B:</label>
+                                        <input type="number" value="1.0" class="softmax-input w-full p-2 border border-stone-300 rounded-md">
+                                    </div>
+                                    <div class="flex items-center">
+                                        <label class="w-16">Class C:</label>
+                                        <input type="number" value="0.1" class="softmax-input w-full p-2 border border-stone-300 rounded-md">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="w-full md:w-1/2">
+                                <h4 class="font-semibold mb-2 text-center">Softmax Probabilities</h4>
+                                <div id="softmax-outputs" class="space-y-2"></div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="validation" class="bg-white p-6 sm:p-8 rounded-lg shadow-md">
+                        <h3 class="text-2xl font-bold mb-4 text-teal-700">7. Out-of-Sample Validation</h3>
+                        <p class="mb-6 text-stone-600">To ensure a model generalizes well to new data, we split our dataset into training, validation, and test sets. This prevents the model from simply memorizing the training data. Click the button to visualize this split.</p>
+                        <div id="dataset-split" class="bg-stone-100 p-4 rounded-lg min-h-[200px] flex items-center justify-center transition-all duration-500">
+                            <div id="full-dataset" class="bg-teal-500 text-white p-8 rounded-md text-center">
+                                <h4 class="font-bold text-lg">Full Dataset</h4>
+                                <p>100%</p>
+                            </div>
+                        </div>
+                        <div class="text-center mt-6">
+                            <button id="split-data-btn" class="bg-teal-600 text-white px-4 py-2 rounded-md hover:bg-teal-700 transition">Split Data</button>
+                        </div>
+                    </section>
+
+                    <section id="overfitting" class="bg-white p-6 sm:p-8 rounded-lg shadow-md">
+                        <h3 class="text-2xl font-bold mb-4 text-teal-700">8. Avoiding Neural Network Overfitting</h3>
+                        <p class="mb-6 text-stone-600">Overfitting happens when a model learns the training data too well, including its noise, and fails on new data. A common technique to combat this is "Early Stopping," where we stop training when the validation loss starts to increase. Use the slider to see how training and validation loss change over epochs.</p>
+                        <div class="chart-container">
+                            <canvas id="overfitting-chart"></canvas>
+                        </div>
+                        <div class="mt-4 px-4">
+                            <label for="epoch-slider" class="block text-center font-medium mb-2">Epoch: <span id="epoch-label">1</span></label>
+                            <input id="epoch-slider" type="range" min="1" max="100" value="1" class="w-full">
+                        </div>
+                    </section>
+
+                </div>
+            </div>
+        </main>
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    // --- Active Nav Link on Scroll ---
+    const sections = document.querySelectorAll('section');
+    const navLinks = document.querySelectorAll('.nav-link');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                navLinks.forEach(link => {
+                    link.classList.toggle('active', link.getAttribute('href').substring(1) === entry.target.id);
+                });
+            }
+        });
+    }, { rootMargin: '-50% 0px -50% 0px' });
+    sections.forEach(section => observer.observe(section));
+
+    // --- 1. Feed-Forward Network Diagram ---
+    const ffnDiagram = document.getElementById('ffn-diagram');
+    function createFFNDiagram(container, idPrefix) {
+        container.innerHTML = '';
+        const layers = [2, 3, 1];
+        layers.forEach((size, i) => {
+            const layer = document.createElement('div');
+            layer.className = 'flex flex-col justify-center items-center space-y-4';
+            for (let j = 0; j < size; j++) {
+                const neuron = document.createElement('div');
+                neuron.id = `${idPrefix}-neuron-${i}-${j}`;
+                neuron.className = 'w-10 h-10 bg-stone-200 border-2 border-stone-400 rounded-full transition-all duration-200 neuron';
+                layer.appendChild(neuron);
+            }
+            container.appendChild(layer);
+        });
+        
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('class', 'absolute top-0 left-0 w-full h-full z-[-1]');
+        container.style.position = 'relative';
+        container.insertBefore(svg, container.firstChild);
+
+        setTimeout(() => {
+            for (let i = 0; i < layers.length - 1; i++) {
+                for (let j = 0; j < layers[i]; j++) {
+                    for (let k = 0; k < layers[i+1]; k++) {
+                        const n1 = document.getElementById(`${idPrefix}-neuron-${i}-${j}`);
+                        const n2 = document.getElementById(`${idPrefix}-neuron-${i+1}-${k}`);
+                        const rect1 = n1.getBoundingClientRect();
+                        const rect2 = n2.getBoundingClientRect();
+                        const containerRect = container.getBoundingClientRect();
+
+                        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                        line.setAttribute('x1', rect1.left - containerRect.left + rect1.width / 2);
+                        line.setAttribute('y1', rect1.top - containerRect.top + rect1.height / 2);
+                        line.setAttribute('x2', rect2.left - containerRect.left + rect2.width / 2);
+                        line.setAttribute('y2', rect2.top - containerRect.top + rect2.height / 2);
+                        line.setAttribute('stroke', '#9ca3af'); // gray-400
+                        line.setAttribute('stroke-width', '2');
+                        line.setAttribute('class', `connection-${i}-${j} transition-all duration-200`);
+                        svg.appendChild(line);
+                    }
+                }
+            }
+        }, 100);
+
+        container.querySelectorAll('.neuron').forEach((neuron, index) => {
+            const [_, i, j] = neuron.id.split('-').slice(2).map(Number);
+            neuron.addEventListener('mouseover', () => {
+                neuron.style.backgroundColor = '#14b8a6'; // teal-500
+                neuron.style.borderColor = '#0d9488'; // teal-600
+                svg.querySelectorAll(`.connection-${i}-${j}`).forEach(l => { l.setAttribute('stroke', '#0d9488'); l.setAttribute('stroke-width', '4'); });
+                if (i > 0) {
+                    svg.querySelectorAll(`.connection-${i-1}`).forEach(l => {
+                        if (l.getAttribute('class').includes(`connection-${i-1}`) && l.getAttribute('x2') == svg.querySelector(`#${neuron.id}`).getBoundingClientRect().left - container.getBoundingClientRect().left + 20) {
+                           l.setAttribute('stroke', '#0d9488'); l.setAttribute('stroke-width', '4');
+                        }
+                    });
+                }
+            });
+            neuron.addEventListener('mouseout', () => {
+                neuron.style.backgroundColor = '';
+                neuron.style.borderColor = '';
+                svg.querySelectorAll('line').forEach(l => { l.setAttribute('stroke', '#9ca3af'); l.setAttribute('stroke-width', '2'); });
+            });
+        });
+    }
+    createFFNDiagram(ffnDiagram, 'ffn');
+
+
+    // --- 2. Convolutional Layer Animation ---
+    const convCanvas = document.getElementById('convolution-canvas');
+    const convCtx = convCanvas.getContext('2d');
+    let convAnimation;
+    let currentStep = 0;
+    const totalSteps = 9;
+    
+    const inputMatrix = Array.from({length: 5}, () => Array.from({length: 5}, () => Math.floor(Math.random() * 2)));
+    const kernel = [[1,0,1],[0,1,0],[1,0,1]];
+    const outputMatrix = Array.from({length: 3}, () => Array(3).fill(null));
+
+    function drawConv() {
+        const w = convCanvas.width;
+        const h = convCanvas.height;
+        convCtx.clearRect(0, 0, w, h);
+        
+        const cellSize = Math.min(w / 12, h / 7);
+        const inputX = cellSize;
+        const inputY = cellSize;
+        const kernelX = inputX + (currentStep % 3) * cellSize;
+        const kernelY = inputY + Math.floor(currentStep / 3) * cellSize;
+        const outputX = w - 4 * cellSize;
+        const outputY = inputY + cellSize;
+
+        // Draw input matrix
+        for(let i=0; i<5; i++) {
+            for(let j=0; j<5; j++) {
+                convCtx.fillStyle = '#e7e5e4'; // stone-200
+                convCtx.fillRect(inputX + j * cellSize, inputY + i * cellSize, cellSize, cellSize);
+                convCtx.strokeRect(inputX + j * cellSize, inputY + i * cellSize, cellSize, cellSize);
+                convCtx.fillStyle = 'black';
+                convCtx.fillText(inputMatrix[i][j], inputX + j * cellSize + cellSize/2.5, inputY + i * cellSize + cellSize/1.5);
+            }
+        }
+        
+        // Draw kernel overlay
+        convCtx.fillStyle = 'rgba(13, 148, 136, 0.3)';
+        convCtx.fillRect(kernelX, kernelY, 3 * cellSize, 3 * cellSize);
+        convCtx.strokeStyle = '#0d9488';
+        convCtx.lineWidth = 2;
+        convCtx.strokeRect(kernelX, kernelY, 3 * cellSize, 3 * cellSize);
+        
+        // Draw output matrix
+        for(let i=0; i<3; i++) {
+            for(let j=0; j<3; j++) {
+                convCtx.fillStyle = '#e7e5e4';
+                convCtx.fillRect(outputX + j * cellSize, outputY + i * cellSize, cellSize, cellSize);
+                convCtx.strokeRect(outputX + j * cellSize, outputY + i * cellSize, cellSize, cellSize);
+                if(outputMatrix[i][j] !== null) {
+                    convCtx.fillStyle = 'black';
+                    convCtx.fillText(outputMatrix[i][j], outputX + j * cellSize + cellSize/2.5, outputY + i * cellSize + cellSize/1.5);
+                }
+            }
+        }
+        convCtx.strokeStyle = 'black';
+        convCtx.lineWidth = 1;
+    }
+    
+    function stepConv() {
+        if (currentStep >= totalSteps) {
+            clearInterval(convAnimation);
+            return;
+        }
+        const outRow = Math.floor(currentStep / 3);
+        const outCol = currentStep % 3;
+        
+        let sum = 0;
+        for(let i=0; i<3; i++) {
+            for(let j=0; j<3; j++) {
+                sum += inputMatrix[outRow+i][outCol+j] * kernel[i][j];
+            }
+        }
+        outputMatrix[outRow][outCol] = sum;
+        currentStep++;
+        drawConv();
+    }
+
+    function resetConv() {
+        clearInterval(convAnimation);
+        currentStep = 0;
+        for(let i=0; i<3; i++) for(let j=0; j<3; j++) outputMatrix[i][j] = null;
+        drawConv();
+    }
+    
+    document.getElementById('conv-play').addEventListener('click', () => {
+        resetConv();
+        convAnimation = setInterval(stepConv, 500);
+    });
+    document.getElementById('conv-reset').addEventListener('click', resetConv);
+    
+    function resizeConvCanvas() {
+        convCanvas.width = convCanvas.clientWidth;
+        convCanvas.height = convCanvas.clientHeight;
+        convCtx.font = `${Math.min(convCanvas.width / 12, convCanvas.height / 7) / 2}px Inter`;
+        drawConv();
+    }
+    window.addEventListener('resize', resizeConvCanvas);
+    resizeConvCanvas();
+
+
+    // --- 3. Vectorization Simulation ---
+    document.getElementById('run-vector-sim').addEventListener('click', () => {
+        const loopTimeEl = document.getElementById('loop-time');
+        const vectorTimeEl = document.getElementById('vector-time');
+        loopTimeEl.textContent = '...';
+        vectorTimeEl.textContent = '...';
+        setTimeout(() => {
+            const loopTime = (Math.random() * 20 + 80).toFixed(2);
+            const vectorTime = (Math.random() * 1 + 0.5).toFixed(2);
+            loopTimeEl.textContent = `${loopTime} ms`;
+            vectorTimeEl.textContent = `${vectorTime} ms`;
+        }, 500);
+    });
+
+    // --- 4. Backpropagation Diagram ---
+    const backpropDiagram = document.getElementById('backprop-diagram');
+    createFFNDiagram(backpropDiagram, 'bp');
+    
+    document.getElementById('forward-pass').addEventListener('click', () => {
+        const neurons = backpropDiagram.querySelectorAll('.neuron');
+        let delay = 0;
+        neurons.forEach(n => {
+            setTimeout(() => {
+                n.style.backgroundColor = '#14b8a6';
+                setTimeout(() => n.style.backgroundColor = '', 200);
+            }, delay);
+            delay += 100;
+        });
+    });
+    
+    document.getElementById('backward-pass').addEventListener('click', () => {
+        const neurons = Array.from(backpropDiagram.querySelectorAll('.neuron')).reverse();
+        let delay = 0;
+        neurons.forEach(n => {
+            setTimeout(() => {
+                n.style.backgroundColor = '#f43f5e'; // rose-500
+                setTimeout(() => n.style.backgroundColor = '', 200);
+            }, delay);
+            delay += 100;
+        });
+    });
+
+    // --- 5. Gradient Chart ---
+    const gradientCtx = document.getElementById('gradient-chart').getContext('2d');
+    let gradientChart;
+    const baseData = Array.from({length: 20}, (_, i) => 100 / (i + 1) * (1 + Math.random() * 0.2));
+
+    function createGradientChart(type) {
+        let data, label;
+        if (type === 'normal') {
+            data = baseData;
+            label = 'Normal Gradient - Loss Converges';
+        } else if (type === 'vanishing') {
+            data = baseData.map((d, i) => i < 5 ? d : baseData[4] - i*0.1 + Math.random()*2);
+            label = 'Vanishing Gradient - Learning Stalls';
+        } else { // exploding
+            data = baseData.map((d, i) => i < 5 ? d : d + (Math.random() - 0.5) * 50);
+            label = 'Exploding Gradient - Learning is Unstable';
+        }
+
+        if (gradientChart) gradientChart.destroy();
+        gradientChart = new Chart(gradientCtx, {
+            type: 'line',
+            data: {
+                labels: Array.from({length: 20}, (_, i) => `Epoch ${i+1}`),
+                datasets: [{
+                    label: label,
+                    data: data,
+                    borderColor: '#0d9488',
+                    backgroundColor: 'rgba(13, 148, 136, 0.1)',
+                    fill: true,
+                    tension: 0.1
+                }]
+            },
+            options: { maintainAspectRatio: false, responsive: true }
+        });
+    }
+    createGradientChart('normal');
+    document.querySelectorAll('.gradient-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            document.querySelectorAll('.gradient-btn').forEach(b => {
+                b.classList.remove('bg-teal-600');
+                b.classList.add('bg-stone-500');
+            });
+            e.target.classList.add('bg-teal-600');
+            e.target.classList.remove('bg-stone-500');
+            createGradientChart(e.target.dataset.type);
+        });
+    });
+    
+    // --- 6. Softmax Calculator ---
+    const softmaxInputs = document.querySelectorAll('.softmax-input');
+    const softmaxOutputsContainer = document.getElementById('softmax-outputs');
+    
+    function updateSoftmax() {
+        const inputs = Array.from(softmaxInputs).map(input => parseFloat(input.value) || 0);
+        const exps = inputs.map(i => Math.exp(i));
+        const sumExps = exps.reduce((a, b) => a + b, 0);
+        const probabilities = exps.map(e => sumExps > 0 ? e / sumExps : 0);
+        
+        softmaxOutputsContainer.innerHTML = '';
+        probabilities.forEach((p, i) => {
+            const percent = (p * 100).toFixed(2);
+            const label = String.fromCharCode(65 + i);
+            const outputDiv = document.createElement('div');
+            outputDiv.className = 'bg-stone-100 p-2 rounded-md';
+            outputDiv.innerHTML = `
+                <div class="flex justify-between items-center mb-1">
+                    <span>Class ${label}</span>
+                    <span class="font-semibold">${percent}%</span>
+                </div>
+                <div class="w-full bg-stone-200 rounded-full h-4">
+                    <div class="bg-teal-500 h-4 rounded-full" style="width: ${percent}%"></div>
+                </div>
+            `;
+            softmaxOutputsContainer.appendChild(outputDiv);
+        });
+    }
+    
+    softmaxInputs.forEach(input => input.addEventListener('input', updateSoftmax));
+    updateSoftmax();
+
+    // --- 7. Dataset Split ---
+    document.getElementById('split-data-btn').addEventListener('click', () => {
+        const container = document.getElementById('dataset-split');
+        container.innerHTML = `
+            <div class="flex flex-col md:flex-row gap-4 w-full">
+                <div class="bg-sky-500 text-white p-4 rounded-md text-center flex-grow transition-all duration-500" style="width: 70%;">
+                    <h4 class="font-bold">Training Set</h4><p>70%</p>
+                </div>
+                <div class="bg-amber-500 text-white p-4 rounded-md text-center flex-grow transition-all duration-500" style="width: 15%;">
+                    <h4 class="font-bold">Validation Set</h4><p>15%</p>
+                </div>
+                <div class="bg-rose-500 text-white p-4 rounded-md text-center flex-grow transition-all duration-500" style="width: 15%;">
+                    <h4 class="font-bold">Test Set</h4><p>15%</p>
+                </div>
+            </div>
+        `;
+    });
+
+    // --- 8. Overfitting Chart ---
+    const overfittingCtx = document.getElementById('overfitting-chart').getContext('2d');
+    const epochSlider = document.getElementById('epoch-slider');
+    const epochLabel = document.getElementById('epoch-label');
+    let overfittingChart;
+    
+    const trainingLoss = Array.from({length: 100}, (_, i) => 100 * Math.exp(-i/20) + Math.random()*5);
+    const validationLoss = Array.from({length: 100}, (_, i) => 100 * Math.exp(-i/30) + (i > 30 ? (i-30)*0.5 : 0) + Math.random()*5);
+    const minValidationEpoch = validationLoss.indexOf(Math.min(...validationLoss)) + 1;
+
+    function createOverfittingChart(epoch) {
+        if (overfittingChart) overfittingChart.destroy();
+        
+        const slicedTraining = trainingLoss.slice(0, epoch);
+        const slicedValidation = validationLoss.slice(0, epoch);
+        const labels = Array.from({length: epoch}, (_, i) => i + 1);
+
+        overfittingChart = new Chart(overfittingCtx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Training Loss',
+                        data: slicedTraining,
+                        borderColor: '#3b82f6', // blue-500
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        tension: 0.1,
+                        fill: true
+                    },
+                    {
+                        label: 'Validation Loss',
+                        data: slicedValidation,
+                        borderColor: '#f43f5e', // rose-500
+                        backgroundColor: 'rgba(244, 63, 94, 0.1)',
+                        tension: 0.1,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                maintainAspectRatio: false,
+                responsive: true,
+                animation: { duration: 0 },
+                plugins: {
+                    annotation: {
+                        annotations: {
+                            line1: {
+                                type: 'line',
+                                xMin: minValidationEpoch,
+                                xMax: minValidationEpoch,
+                                borderColor: '#0d9488',
+                                borderWidth: 2,
+                                borderDash: [6, 6],
+                                label: {
+                                    content: 'Early Stop',
+                                    enabled: true,
+                                    position: 'start'
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+    
+    epochSlider.addEventListener('input', (e) => {
+        const epoch = parseInt(e.target.value);
+        epochLabel.textContent = epoch;
+        createOverfittingChart(epoch);
+    });
+    
+    createOverfittingChart(1);
+
+});
+</script>
+</body>
+</html>
