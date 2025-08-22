@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deep Learning Report</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color-light: #f3f4f6;
+            --text-color-light: #1f2937;
+            --card-bg-light: #ffffff;
+            --primary-color-light: #3b82f6;
+            --secondary-color-light: #60a5fa;
+            --diagram-bg-light: #e5e7eb;
+            --border-color-light: #d1d5db;
+        }
+        .dark {
+            --bg-color-dark: #1f2937;
+            --text-color-dark: #e5e7eb;
+            --card-bg-dark: #111827;
+            --primary-color-dark: #38bdf8;
+            --secondary-color-dark: #06b6d4;
+            --diagram-bg-dark: #374151;
+            --border-color-dark: #4b5563;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color-light);
+            color: var(--text-color-light);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .dark body {
+            background-color: var(--bg-color-dark);
+            color: var(--text-color-dark);
+        }
+        
+        .section-header {
+            font-size: 2.25rem;
+            font-weight: 700;
+            line-height: 2.5rem;
+            border-bottom: 2px solid var(--border-color-light);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary-color-light);
+            transition: color 0.3s;
+        }
+        
+        .dark .section-header {
+            color: var(--primary-color-dark);
+            border-bottom-color: var(--border-color-dark);
+        }
+        
+        .sub-section {
+            border-left: 4px solid var(--secondary-color-light);
+            padding-left: 1rem;
+            margin-top: 1.5rem;
+            transition: border-left-color 0.3s;
+        }
+        
+        .dark .sub-section {
+            border-left-color: var(--secondary-color-dark);
+        }
+
+        .card {
+            background-color: var(--card-bg-light);
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+        
+        .dark .card {
+            background-color: var(--card-bg-dark);
+        }
+
+        .diagram-container {
+            background-color: var(--diagram-bg-light);
+            transition: background-color 0.3s;
+        }
+        
+        .dark .diagram-container {
+            background-color: var(--diagram-bg-dark);
+        }
+
+        .svg-fill-light path {
+            fill: #3b82f6;
+        }
+        .dark .svg-fill-light path {
+            fill: #38bdf8;
+        }
+
+        /* General styles for hover effects and animations */
+        a, button, svg {
+            transition: all 0.2s ease-in-out;
+        }
+        .hover-effect:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .scroll-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            opacity: 0;
+            transform: translateY(1rem);
+            visibility: hidden;
+            transition: all 0.3s ease-in-out;
+        }
+        .scroll-top.show {
+            opacity: 1;
+            transform: translateY(0);
+            visibility: visible;
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-8">
+
+<div class="max-w-4xl mx-auto card p-6 sm:p-10 rounded-xl shadow-lg">
+    <!-- Header Section -->
+    <header class="text-center mb-10">
+        <h1 class="text-4xl sm:text-5xl font-extrabold mb-2">Deep Learning Report</h1>
+        <p class="text-lg">A comprehensive overview of key deep learning concepts.</p>
+    </header>
+
+    <!-- Theme Toggle -->
+    <div class="flex justify-center mb-6">
+        <button id="theme-toggle" class="p-2 rounded-full shadow-md bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none transition-transform hover:scale-110">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path id="sun-icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                <path id="moon-icon" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+            </svg>
+        </button>
+    </div>
+
+    <!-- Main Content -->
+    <main>
+        <!-- DL 20: Other Metrics and the ROC Curve -->
+        <section class="mb-10">
+            <h2 class="section-header">DL 20: Other Metrics and the ROC Curve</h2>
+            <p class="leading-relaxed">
+                This section covers why accuracy alone isn't enough to evaluate a binary classification model, especially with imbalanced datasets. It introduces a variety of metrics derived from a confusion matrix.
+            </p>
+            <div class="sub-section">
+                <h3 class="text-xl font-semibold mb-2">Key Metrics</h3>
+                <ul class="list-disc list-inside space-y-1">
+                    <li><strong>Precision:</strong> How many of the positive predictions were actually correct?</li>
+                    <li><strong>Recall (True Positive Rate):</strong> How many of the actual positive cases were correctly identified?</li>
+                    <li><strong>F1 Score:</strong> The weighted average of Precision and Recall, providing a balanced measure.</li>
+                </ul>
+            </div>
+            <div class="sub-section">
+                <h3 class="text-xl font-semibold mb-2">The ROC Curve</h3>
+                <p class="leading-relaxed">
+                    The Receiver Operating Characteristic (ROC) curve plots the True Positive Rate (TPR) against the False Positive Rate (FPR) at various classification thresholds. The closer the curve is to the top-left corner, the better the model.
+                </p>
+                <div class="diagram-container p-4 rounded-lg shadow-inner mt-4">
+                    <div class="w-full h-64 sm:h-80 rounded-lg flex items-center justify-center p-4">
+                        <svg viewBox="0 0 100 100" class="w-full h-full">
+                            <!-- Axis -->
+                            <line x1="10" y1="90" x2="90" y2="90" stroke="currentColor" stroke-width="1"/>
+                            <line x1="10" y1="90" x2="10" y2="10" stroke="currentColor" stroke-width="1"/>
+                            <!-- Labels -->
+                            <text x="50" y="95" text-anchor="middle" font-size="6" fill="currentColor">False Positive Rate</text>
+                            <text x="5" y="50" text-anchor="middle" font-size="6" transform="rotate(-90 5 50)" fill="currentColor">True Positive Rate</text>
+                            <!-- Random Guess Line -->
+                            <line x1="10" y1="90" x2="90" y2="10" stroke="#9ca3af" stroke-dasharray="2" stroke-width="1.5"/>
+                            <text x="50" y="50" text-anchor="middle" font-size="4" fill="#6b7280">Random Guess (AUC=0.5)</text>
+                            <!-- Perfect Model Line -->
+                            <line x1="10" y1="90" x2="10" y2="10" stroke="#22c55e" stroke-width="2"/>
+                            <line x1="10" y1="10" x2="90" y2="10" stroke="#22c55e" stroke-width="2"/>
+                            <!-- AUC Label -->
+                            <path d="M 10 90 Q 70 10 90 10" fill="none" stroke="#38bdf8" stroke-width="2"/>
+                            <text x="75" y="25" font-size="4" fill="#38bdf8">Example ROC Curve</text>
+                            <text x="75" y="15" font-size="4" fill="#38bdf8">Perfect Model (AUC=1.0)</text>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- DL 21: The Adam Optimizer -->
+        <section class="mb-10">
+            <h2 class="section-header">DL 21: The Adam Optimizer</h2>
+            <p class="leading-relaxed">
+                The Adam Optimizer (Adaptive Moment Estimation) is a highly effective optimization algorithm for training neural networks. It combines the benefits of Momentum and RMSprop.
+            </p>
+            <div class="sub-section">
+                <h3 class="text-xl font-semibold mb-2">How It Works</h3>
+                <ul class="list-disc list-inside space-y-1">
+                    <li><strong>First Moment (Momentum):</strong> Maintains a moving average of past gradients to accelerate training in the right direction.</li>
+                    <li><strong>Second Moment (RMSprop):</strong> Maintains a moving average of squared gradients to adapt the learning rate for each parameter individually.</li>
+                </ul>
+                <p class="leading-relaxed mt-2">
+                    This adaptive learning rate is a key rule of Adam, allowing it to converge faster and more reliably than other methods.
+                </p>
+            </div>
+        </section>
+
+        <!-- DL 22: Auto-Encoders -->
+        <section class="mb-10">
+            <h2 class="section-header">DL 22: Auto-Encoders</h2>
+            <p class="leading-relaxed">
+                An autoencoder is a neural network designed to learn a compressed representation of data. It consists of an encoder and a decoder.
+            </p>
+            <div class="diagram-container p-4 rounded-lg shadow-inner mt-4">
+                <div class="diagram-title">Autoencoder Architecture</div>
+                <svg viewBox="0 0 100 50" class="w-full h-40">
+                    <!-- Encoder -->
+                    <rect x="5" y="15" width="10" height="20" fill="#38bdf8" rx="2" ry="2"/>
+                    <rect x="20" y="17.5" width="7" height="15" fill="#38bdf8" rx="2" ry="2"/>
+                    <rect x="32.5" y="20" width="5" height="10" fill="#38bdf8" rx="2" ry="2"/>
+                    <!-- Decoder -->
+                    <rect x="62.5" y="20" width="5" height="10" fill="#06b6d4" rx="2" ry="2"/>
+                    <rect x="75" y="17.5" width="7" height="15" fill="#06b6d4" rx="2" ry="2"/>
+                    <rect x="85" y="15" width="10" height="20" fill="#06b6d4" rx="2" ry="2"/>
+                    <!-- Arrows -->
+                    <line x1="15" y1="25" x2="20" y2="25" stroke="#9ca3af" stroke-width="0.5" marker-end="url(#arrowhead)"/>
+                    <line x1="27" y1="25" x2="32.5" y2="25" stroke="#9ca3af" stroke-width="0.5" marker-end="url(#arrowhead)"/>
+                    <line x1="37.5" y1="25" x2="62.5" y2="25" stroke="#9ca3af" stroke-width="0.5" stroke-dasharray="2"/>
+                    <line x1="67.5" y1="25" x2="75" y2="25" stroke="#9ca3af" stroke-width="0.5" marker-end="url(#arrowhead)"/>
+                    <line x1="82" y1="25" x2="85" y2="25" stroke="#9ca3af" stroke-width="0.5" marker-end="url(#arrowhead)"/>
+                    <!-- Text -->
+                    <text x="12.5" y="40" text-anchor="middle" font-size="5" fill="currentColor">Input</text>
+                    <text x="23.5" y="12" text-anchor="middle" font-size="4" fill="currentColor">Encoder</text>
+                    <text x="50" y="30" text-anchor="middle" font-size="5" fill="currentColor">Hidden Layer</text>
+                    <text x="78.5" y="12" text-anchor="middle" font-size="4" fill="currentColor">Decoder</text>
+                    <text x="89.5" y="40" text-anchor="middle" font-size="5" fill="currentColor">Output</text>
+                    <defs>
+                        <marker id="arrowhead" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                            <path d="M 0 0 L 10 5 L 0 10 z" fill="#9ca3af" stroke="none"/>
+                        </marker>
+                    </defs>
+                </svg>
+            </div>
+            <div class="sub-section">
+                <h3 class="text-xl font-semibold mb-2">Variational Autoencoders (VAEs)</h3>
+                <p class="leading-relaxed">
+                    VAEs improve on autoencoders by producing a mean and a variance vector from the encoder, which creates a smooth, continuous latent space. This enables the model to reliably generate new data by sampling from this space.
+                </p>
+            </div>
+        </section>
+
+        <!-- DL 23: Generative Adversarial Networks (GANs) -->
+        <section class="mb-10">
+            <h2 class="section-header">DL 23: Generative Adversarial Networks (GANs)</h2>
+            <p class="leading-relaxed">
+                A GAN is a generative model composed of two competing networks that are trained in an adversarial game.
+            </p>
+            <div class="sub-section">
+                <ul class="list-disc list-inside space-y-1">
+                    <li><strong>Generator:</strong> Creates new, fake data samples from random noise.</li>
+                    <li><strong>Discriminator:</strong> Classifies whether an input is a real or fake data sample.</li>
+                </ul>
+                <p class="leading-relaxed mt-2">
+                    The rule of the game is for the Generator to produce fakes that can fool the Discriminator, while the Discriminator tries to improve its ability to detect them.
+                </p>
+            </div>
+        </section>
+
+        <!-- DL 24: AlphaGo & AlphaGo Zero -->
+        <section class="mb-10">
+            <h2 class="section-header">DL 24: AlphaGo & AlphaGo Zero</h2>
+            <p class="leading-relaxed">
+                AlphaGo and AlphaGo Zero are AI systems from DeepMind that mastered the game of Go. Go's complexity makes it difficult for traditional AI.
+            </p>
+            <div class="sub-section">
+                <h3 class="text-xl font-semibold mb-2">AlphaGo's Networks</h3>
+                <ul class="list-disc list-inside space-y-1">
+                    <li><strong>Policy Network:</strong> Narrows down the search space by predicting the most promising moves.</li>
+                    <li><strong>Value Network:</strong> Estimates the probability of winning from a given board state.</li>
+                </ul>
+            </div>
+            <div class="sub-section">
+                <h3 class="text-xl font-semibold mb-2">The AlphaGo Zero Rule</h3>
+                <p class="leading-relaxed">
+                    AlphaGo Zero learned Go entirely through self-play, without any human knowledge. It used a single neural network for both policy and value estimations, which was more efficient than the separate networks used by AlphaGo.
+                </p>
+            </div>
+        </section>
+
+        <!-- DL 25: Computation Graphs -->
+        <section class="mb-10">
+            <h2 class="section-header">DL 25: Computation Graphs</h2>
+            <p class="leading-relaxed">
+                A computational graph is a way to visualize the flow of data and operations in a program. It is particularly useful for understanding backpropagation.
+            </p>
+            <div class="diagram-container p-4 rounded-lg shadow-inner mt-4">
+                <div class="diagram-title">Simple Computation Graph</div>
+                <svg viewBox="0 0 100 50" class="w-full h-40">
+                    <!-- Nodes -->
+                    <circle cx="20" cy="25" r="5" fill="#38bdf8"/>
+                    <circle cx="40" cy="15" r="5" fill="#38bdf8"/>
+                    <circle cx="40" cy="35" r="5" fill="#38bdf8"/>
+                    <rect x="50" y="20" width="10" height="10" fill="#9ca3af" rx="2" ry="2"/>
+                    <rect x="70" y="20" width="10" height="10" fill="#9ca3af" rx="2" ry="2"/>
+                    <circle cx="90" cy="25" r="5" fill="#06b6d4"/>
+                    <!-- Labels -->
+                    <text x="20" y="40" text-anchor="middle" font-size="5" fill="currentColor">Input</text>
+                    <text x="40" y="10" text-anchor="middle" font-size="5" fill="currentColor">Weight 1</text>
+                    <text x="40" y="40" text-anchor="middle" font-size="5" fill="currentColor">Weight 2</text>
+                    <text x="55" y="25" text-anchor="middle" font-size="5" fill="white">x</text>
+                    <text x="75" y="25" text-anchor="middle" font-size="5" fill="white">+</text>
+                    <text x="90" y="40" text-anchor="middle" font-size="5" fill="currentColor">Output</text>
+                    <!-- Edges -->
+                    <line x1="25" y1="25" x2="49" y2="25" stroke="#9ca3af" stroke-width="0.5" marker-end="url(#arrowhead)"/>
+                    <line x1="45" y1="15" x2="49" y2="25" stroke="#9ca3af" stroke-width="0.5" marker-end="url(#arrowhead)"/>
+                    <line x1="45" y1="35" x2="49" y2="25" stroke="#9ca3af" stroke-width="0.5" marker-end="url(#arrowhead)"/>
+                    <line x1="60" y1="25" x2="70" y2="25" stroke="#9ca3af" stroke-width="0.5" marker-end="url(#arrowhead)"/>
+                    <line x1="80" y1="25" x2="85" y2="25" stroke="#9ca3af" stroke-width="0.5" marker-end="url(#arrowhead)"/>
+                    <defs>
+                        <marker id="arrowhead" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                            <path d="M 0 0 L 10 5 L 0 10 z" fill="#9ca3af" stroke="none"/>
+                        </marker>
+                    </defs>
+                </svg>
+            </div>
+            <div class="sub-section">
+                <h3 class="text-xl font-semibold mb-2">The Chain Rule Rule</h3>
+                <p class="leading-relaxed">
+                    The graph makes it clear how to apply the chain rule for backpropagation. By propagating gradients backward, the network can efficiently calculate the derivatives of the loss with respect to each weight.
+                </p>
+            </div>
+        </section>
+
+        <!-- DL 26: Automatic Differentiation -->
+        <section class="mb-10">
+            <h2 class="section-header">DL 26: Automatic Differentiation</h2>
+            <p class="leading-relaxed">
+                Automatic Differentiation (AD) is the core technique for computing derivatives in deep learning.
+            </p>
+            <div class="sub-section">
+                <h3 class="text-xl font-semibold mb-2">Reverse Mode (Backpropagation)</h3>
+                <p class="leading-relaxed">
+                    This is the AD method used in deep learning. It's efficient because its complexity scales with the number of outputs (a single loss value).
+                </p>
+                <h4 class="text-lg font-medium mt-2">The Gradient Tape Rule</h4>
+                <p class="leading-relaxed">
+                    During the forward pass, a "gradient tape" or computational graph is implicitly built. This tape records the operations and dependencies. During the backward pass, the derivatives are calculated by propagating them back through this recorded tape.
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <!-- Scroll to Top Button -->
+    <button id="scroll-top-btn" class="scroll-top p-3 rounded-full shadow-lg bg-gray-300 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:scale-110">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+        </svg>
+    </button>
+
+    <!-- Footer Section -->
+    <footer class="text-center text-sm mt-10 pt-6 border-t border-gray-200 dark:border-gray-700">
+        <p>&copy; 2025 Deep Learning Report. All Rights Reserved.</p>
+    </footer>
+
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const toggleButton = document.getElementById('theme-toggle');
+        const sunIcon = document.getElementById('sun-icon');
+        const moonIcon = document.getElementById('moon-icon');
+        const html = document.documentElement;
+
+        // Initial check for system preference
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            html.classList.add('dark');
+            sunIcon.classList.add('hidden');
+            moonIcon.classList.remove('hidden');
+        } else {
+            html.classList.remove('dark');
+            sunIcon.classList.remove('hidden');
+            moonIcon.classList.add('hidden');
+        }
+
+        toggleButton.addEventListener('click', () => {
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+                sunIcon.classList.remove('hidden');
+                moonIcon.classList.add('hidden');
+            } else {
+                html.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+                sunIcon.classList.add('hidden');
+                moonIcon.classList.remove('hidden');
+            }
+        });
+
+        // Scroll to top functionality
+        const scrollTopBtn = document.getElementById('scroll-top-btn');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                scrollTopBtn.classList.add('show');
+            } else {
+                scrollTopBtn.classList.remove('show');
+            }
+        });
+        scrollTopBtn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    });
+</script>
+
+</body>
+</html>
